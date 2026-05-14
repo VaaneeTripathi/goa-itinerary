@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goa, May 2026 — Five Days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Manrope:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root {
+  --ink: #1f2421;
+  --ink-soft: #3a3f3b;
+  --paper: #f7efe2;
+  --paper-warm: #fdf8ee;
+  --cream: #efe5d2;
+  --ocean: #1b4654;
+  --ocean-deep: #0f2b35;
+  --terracotta: #c25a3c;
+  --terracotta-soft: #d4836a;
+  --sage: #7c8c6f;
+  --gold: #c39237;
+  --mute: #8a8377;
+  --line: #d9cdb5;
+  --shadow-lift: 0 4px 12px rgba(31,36,33,0.1), 0 24px 48px rgba(31,36,33,0.12);
+  --display: "Fraunces", "Times New Roman", serif;
+  --body: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: "JetBrains Mono", "Courier New", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a {
+  color: var(--ocean);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: color 0.2s ease;
+}
+a:hover { color: var(--terracotta); }
+
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: var(--ocean-deep);
+  color: var(--paper-warm);
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('images/hero.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15,43,53,0.25) 0%, rgba(15,43,53,0.55) 60%, rgba(15,43,53,0.88) 100%);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 6vw 5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4rem;
+  align-items: end;
+}
+.hero-mark {
+  position: absolute;
+  top: 3rem;
+  left: 6vw;
+  z-index: 3;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(247,239,226,0.85);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hero-mark::before { content: ''; width: 24px; height: 1px; background: currentColor; }
+.hero-title {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  font-variation-settings: "opsz" 120;
+}
+.hero-title em { font-style: italic; font-weight: 400; color: var(--terracotta-soft); }
+.hero-stats {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  color: rgba(247,239,226,0.9);
+  border-left: 1px solid rgba(247,239,226,0.3);
+  padding-left: 2rem;
+  white-space: nowrap;
+}
+.hero-stats strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--paper-warm);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.15rem;
+}
+.hero-stats div + div { margin-top: 0.9rem; }
+
+.orient {
+  padding: 5rem 6vw;
+  border-bottom: 1px solid var(--line);
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--mute);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+.section-label::before { content: ''; width: 32px; height: 1px; background: var(--terracotta); }
+.orient-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+}
+.orient-item {
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--terracotta);
+}
+.orient-item .lbl {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.orient-item .val {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.orient-item .val em { font-style: italic; }
+.orient-item .meta {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+}
+
+.day {
+  padding: 6rem 6vw;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+.day:nth-child(even) { background: var(--paper-warm); }
+.day:nth-child(odd) { background: var(--paper); }
+.day-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 3rem;
+  align-items: end;
+  margin-bottom: 3.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.day-num {
+  font-family: var(--display);
+  font-size: clamp(6rem, 14vw, 12rem);
+  font-weight: 200;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: var(--ocean);
+  font-variation-settings: "opsz" 144;
+  position: relative;
+}
+.day-num::after {
+  content: '';
+  position: absolute;
+  bottom: 0.5rem;
+  left: -0.5rem;
+  right: -0.5rem;
+  height: 8px;
+  background: var(--terracotta);
+  opacity: 0.15;
+  z-index: -1;
+}
+.day-headline {
+  font-family: var(--display);
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.day-headline em { font-style: italic; color: var(--terracotta); }
+.day-date {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.75rem;
+}
+.day-meta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  text-align: right;
+  line-height: 1.8;
+  white-space: nowrap;
+}
+.day-meta strong {
+  display: block;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--terracotta);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.day-body {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  gap: 4rem;
+  align-items: start;
+}
+.day-visual {
+  position: sticky;
+  top: 2rem;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  border-radius: 2px;
+  box-shadow: var(--shadow-lift);
+  background: var(--ocean);
+}
+.day-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.day-visual:hover img { transform: scale(1.04); }
+
+.timeline { display: flex; flex-direction: column; }
+.block {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 2.5rem;
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--line);
+}
+.block:first-child { border-top: none; padding-top: 0; }
+.block-time {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--ocean);
+  font-weight: 500;
+  line-height: 1.6;
+  padding-top: 0.4rem;
+}
+.block-time .duration {
+  display: block;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 0.7rem;
+  color: var(--mute);
+  letter-spacing: 0;
+  text-transform: none;
+  margin-top: 0.2rem;
+  font-weight: 400;
+}
+.block-content h4 {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+.block-content .place-meta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 0.7rem;
+}
+.block-content p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.tag-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  color: var(--ink-soft);
+  background: rgba(255,255,255,0.5);
+}
+.tag.fixed { background: var(--terracotta); color: var(--paper-warm); border-color: var(--terracotta); }
+.tag.cost { color: var(--ocean); border-color: rgba(27,70,84,0.3); }
+
+.food {
+  padding: 6rem 6vw 7rem;
+  background: var(--ocean-deep);
+  color: var(--paper-warm);
+}
+.food .section-label { color: rgba(247,239,226,0.6); }
+.food .section-label::before { background: var(--terracotta-soft); }
+.food-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 3rem;
+  align-items: end;
+}
+.food-header h2 {
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.food-header h2 em { font-style: italic; color: var(--terracotta-soft); }
+.food-header p {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: rgba(247,239,226,0.75);
+}
+.filters {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(247,239,226,0.05);
+  border: 1px solid rgba(247,239,226,0.12);
+  border-radius: 2px;
+  align-items: center;
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.filter-group:first-child { border-right: 1px solid rgba(247,239,226,0.15); padding-right: 2.5rem; }
+.filter-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247,239,226,0.5);
+  margin-right: 0.5rem;
+}
+.chip {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(247,239,226,0.25);
+  border-radius: 100px;
+  background: transparent;
+  color: rgba(247,239,226,0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+.chip:hover { border-color: var(--terracotta-soft); color: var(--terracotta-soft); }
+.chip.active {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: var(--paper-warm);
+}
+.food-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  height: 75vh;
+  min-height: 580px;
+  border: 1px solid rgba(247,239,226,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(247,239,226,0.04);
+}
+#map { height: 100%; width: 100%; background: #0f2b35; }
+.restaurant-panel {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--paper-warm);
+  color: var(--ink);
+  border-left: 1px solid rgba(247,239,226,0.15);
+}
+.restaurant-panel::-webkit-scrollbar { width: 8px; }
+.restaurant-panel::-webkit-scrollbar-track { background: var(--cream); }
+.restaurant-panel::-webkit-scrollbar-thumb { background: var(--mute); border-radius: 4px; }
+.r-count {
+  position: sticky;
+  top: 0;
+  background: var(--paper-warm);
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  z-index: 5;
+}
+.r-count strong {
+  color: var(--terracotta);
+  font-family: var(--display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.r-card {
+  padding: 1.4rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.r-card:hover { background: var(--cream); }
+.r-card.highlighted { background: var(--cream); border-left: 3px solid var(--terracotta); }
+.r-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+.r-name {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.r-price {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ocean);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+.r-meta {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 0.65rem;
+}
+.r-meta .dot { color: var(--terracotta); margin: 0 0.4rem; }
+.r-desc {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.r-tags {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+.r-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  color: var(--mute);
+}
+.r-tag.veg { color: var(--sage); border-color: rgba(124,140,111,0.4); }
+.r-tag.nonveg { color: var(--terracotta); border-color: rgba(194,90,60,0.4); }
+.leaflet-popup-content-wrapper {
+  background: var(--paper-warm);
+  color: var(--ink);
+  border-radius: 2px;
+  font-family: var(--body);
+  padding: 0;
+  box-shadow: var(--shadow-lift);
+}
+.leaflet-popup-content { margin: 0.9rem 1.1rem; font-size: 0.85rem; line-height: 1.5; }
+.leaflet-popup-tip { background: var(--paper-warm); }
+.popup-name {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+.popup-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.popup-meta .dot { color: var(--terracotta); margin: 0 0.3rem; }
+.custom-marker {
+  width: 26px;
+  height: 26px;
+  background: var(--terracotta);
+  border: 2px solid var(--paper-warm);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  position: relative;
+}
+.custom-marker::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  background: var(--paper-warm);
+  border-radius: 50%;
+}
+
+.footer {
+  padding: 4rem 6vw 2.5rem;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.footer em {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--terracotta);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; }
+  .hero-stats { border-left: none; border-top: 1px solid rgba(247,239,226,0.3); padding-left: 0; padding-top: 2rem; }
+  .orient-grid { grid-template-columns: repeat(2, 1fr); }
+  .day-header { grid-template-columns: 1fr; gap: 1.5rem; }
+  .day-num { font-size: 8rem; }
+  .day-meta { text-align: left; }
+  .day-body { grid-template-columns: 1fr; gap: 2rem; }
+  .day-visual { position: relative; top: 0; aspect-ratio: 16/10; max-width: 600px; }
+  .food-header { grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+  .food-layout { grid-template-columns: 1fr; height: auto; }
+  #map { height: 50vh; min-height: 400px; }
+  .restaurant-panel { max-height: 60vh; }
+  .filters { grid-template-columns: 1fr; gap: 1rem; }
+  .filter-group:first-child { border-right: none; padding-right: 0; border-bottom: 1px solid rgba(247,239,226,0.15); padding-bottom: 1rem; }
+}
+@media (max-width: 640px) {
+  .hero-content { padding: 0 5vw 3rem; }
+  .hero-mark { left: 5vw; top: 2rem; }
+  .day, .orient, .food, .footer { padding-left: 5vw; padding-right: 5vw; }
+  .day { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+  .orient-grid { grid-template-columns: 1fr; }
+  .block { grid-template-columns: 1fr; gap: 0.5rem; }
+  .block-time { padding-top: 0; }
+  .day-num { font-size: 6rem; }
+  .filter-group { gap: 0.5rem; }
+  .chip { font-size: 0.65rem; padding: 0.4rem 0.75rem; }
+  .footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-mark">May 16 — 20 · 2026 · Anjuna</div>
+  <div class="hero-content">
+    <div><h1 class="hero-title">Five days<br>in <em>Goa</em></h1></div>
+    <div class="hero-stats">
+      <div><strong>Base</strong>Aloha Nebula · Anjuna</div>
+      <div><strong>Three fixed parties</strong>Gypsea · Purple Martini · Bastian</div>
+      <div><strong>Sunset</strong>~6:55 PM</div>
+    </div>
+  </div>
+</header>
+
+<section class="orient">
+  <div class="section-label">Anchors</div>
+  <div class="orient-grid">
+    <div class="orient-item">
+      <span class="lbl">Sat 16 · 8 PM</span>
+      <div class="val"><em>Gypsea</em> Beach Club</div>
+      <div class="meta">Anjuna Beach</div>
+    </div>
+    <div class="orient-item">
+      <span class="lbl">Mon 18 · 6 PM</span>
+      <div class="val"><em>Purple Martini</em></div>
+      <div class="meta">Sunset Point, Anjuna cliff</div>
+    </div>
+    <div class="orient-item">
+      <span class="lbl">Tue 19 · 9 PM</span>
+      <div class="val"><em>Bastian Riviera</em></div>
+      <div class="meta">Morjim backwaters</div>
+    </div>
+    <div class="orient-item">
+      <span class="lbl">Climate</span>
+      <div class="val">Pre-monsoon</div>
+      <div class="meta">32–35°C, high humidity</div>
+    </div>
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-header">
+    <div class="day-num">01</div>
+    <div>
+      <h1 class="day-headline">Arrival, <em>Chapora</em> at sunset, Gypsea, Mackie's.</h1>
+      <div class="day-date">Saturday · 16 May</div>
+    </div>
+    <div class="day-meta"><strong>The opener</strong>Anjuna · Vagator · Baga</div>
+  </div>
+  <div class="day-body">
+    <div class="day-visual"><img src="images/day-1.jpg" alt="Chapora Fort"></div>
+    <div class="timeline">
+      <div class="block">
+        <div class="block-time">12:55 PM<span class="duration">arrival</span></div>
+        <div class="block-content">
+          <h4>Land at Mopa or Dabolim</h4>
+          <div class="place-meta">Pre-paid taxi to Anjuna · ~45 min</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">2:00 PM<span class="duration">90 min</span></div>
+        <div class="block-content">
+          <h4>Check in at Aloha Nebula</h4>
+          <div class="place-meta">Dmello Vaddo, Anjuna</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">3:30 PM<span class="duration">lunch</span></div>
+        <div class="block-content">
+          <h4>Lunch near base</h4>
+          <p>Options on the food map below.</p>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">5:00 PM<span class="duration">~2 hrs</span></div>
+        <div class="block-content">
+          <h4>Chapora Fort</h4>
+          <div class="place-meta">10 min drive · Free entry</div>
+          <p>Ruined Portuguese laterite fort built 1717, on a hilltop above the Chapora river mouth. Panoramic views across Vagator, Morjim, and the Arabian Sea.</p>
+          <div class="tag-row"><span class="tag">Free</span><span class="tag">Sunset</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">8:00 PM<span class="duration">3+ hrs</span></div>
+        <div class="block-content">
+          <h4>Gypsea Beach Club</h4>
+          <div class="place-meta">Anjuna Beach · 5 min from base</div>
+          <p>Goa's largest beach club. Three bars, direct beach access, Bohemian-Mediterranean styling. European-leaning menu, cocktails, late-night DJs. <a href="https://gypsea.in/" target="_blank">gypsea.in</a></p>
+          <div class="tag-row"><span class="tag fixed">Fixed</span><span class="tag cost">₹₹₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">11:30 PM<span class="duration">~90 min</span></div>
+        <div class="block-content">
+          <h4>Mackie's Saturday Night Bazaar</h4>
+          <div class="place-meta">Baga riverside · 15 min drive · Open till 1 AM</div>
+          <p>Seasonal night market that runs into May. Stalls along the Baga river, live music, food, late-night flea-market hum.</p>
+          <div class="tag-row"><span class="tag">Late Night</span><span class="tag">Market</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-header">
+    <div class="day-num">02</div>
+    <div>
+      <h1 class="day-headline">An <em>alcohol museum</em>, the Latin Quarter, sunset on the Mandovi.</h1>
+      <div class="day-date">Sunday · 17 May</div>
+    </div>
+    <div class="day-meta"><strong>The Panjim day</strong>Candolim · Fontainhas · Mandovi</div>
+  </div>
+  <div class="day-body">
+    <div class="day-visual"><img src="images/day-2.jpg" alt="Fontainhas"></div>
+    <div class="timeline">
+      <div class="block">
+        <div class="block-time">10:30 AM<span class="duration">drive</span></div>
+        <div class="block-content">
+          <h4>Leave Anjuna for Candolim</h4>
+          <div class="place-meta">~25 min south</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">11:00 AM<span class="duration">~1 hr</span></div>
+        <div class="block-content">
+          <h4>AAA — All About Alcohol Museum</h4>
+          <div class="place-meta">Main Road, Candolim · ₹300 pp</div>
+          <p>World's first alcohol museum. Vintage glassware, antique distillation equipment, recreated 18th-century Goan taverna, the largest feni cellar in Goa. Guided tour ends with three feni cocktail shooters and a house feni. <a href="https://www.instagram.com/alcoholmuseum/" target="_blank">@alcoholmuseum</a></p>
+          <div class="tag-row"><span class="tag">Museum</span><span class="tag">Tasting</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">12:30 PM<span class="duration">light lunch</span></div>
+        <div class="block-content">
+          <h4>Lunch in Panjim</h4>
+          <p>Light meal — the afternoon walk has tastings.</p>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">2:30 PM<span class="duration">3 hrs</span></div>
+        <div class="block-content">
+          <h4>Fontainhas Heritage &amp; Food Trail</h4>
+          <div class="place-meta">Make It Happen · ₹2,750–3,750 pp</div>
+          <p>Goa's UNESCO-recognised Latin Quarter — narrow lanes of yellow, blue, and green Portuguese houses. The trail folds heritage walking with tastings at the city's oldest bakery, a centuries-old taverna, and a heritage home. <a href="https://makeithappen.co.in/tour/fontainhas-heritage-walk/" target="_blank">makeithappen.co.in</a></p>
+          <div class="tag-row"><span class="tag">Walking</span><span class="tag">Heritage</span><span class="tag">Food</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">6:00 PM<span class="duration">1 hr</span></div>
+        <div class="block-content">
+          <h4>Mandovi Sunset Cruise</h4>
+          <div class="place-meta">Santa Monica Jetty</div>
+          <p>Triple-deck cruiser down the Mandovi past Fort Aguada, the Governor's Palace, and Miramar Beach. Sunset over the Arabian Sea. Paradise Cruises (₹500–700) or Champions Yacht Club (₹999).</p>
+          <div class="tag-row"><span class="tag">Sunset</span><span class="tag">Boat</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">8:30 PM<span class="duration">drive + dinner</span></div>
+        <div class="block-content">
+          <h4>Back to Anjuna for dinner</h4>
+          <p>Options on the food map below.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-header">
+    <div class="day-num">03</div>
+    <div>
+      <h1 class="day-headline">A <em>spice plantation</em>, floating feni, two hours on the cliff.</h1>
+      <div class="day-date">Monday · 18 May</div>
+    </div>
+    <div class="day-meta"><strong>The South Goa day</strong>Netravali · Cuelim · Anjuna</div>
+  </div>
+  <div class="day-body">
+    <div class="day-visual"><img src="images/day-3.jpg" alt="Spice plantation"></div>
+    <div class="timeline">
+      <div class="block">
+        <div class="block-time">7:00 AM<span class="duration">drive</span></div>
+        <div class="block-content">
+          <h4>Leave Anjuna for Netravali</h4>
+          <div class="place-meta">~2 hrs south via NH66</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">9:00 AM<span class="duration">~3.5 hrs</span></div>
+        <div class="block-content">
+          <h4>Tanshikar Organic Spice Farm</h4>
+          <div class="place-meta">Netravali Wildlife Sanctuary · ₹600 pp</div>
+          <p>Award-winning family-run organic spice farm inside the Western Ghats rainforest. Welcome ginger-lime tea, jeep ride into the sanctuary, 40-minute guided forest trek to a waterfall, plantation walk through cashew, pepper, vanilla, cardamom, bee-keeping demo, 250-year-old mud heritage house. Vegetarian Goan farm lunch. <a href="https://tanshikarspicefarm.com/" target="_blank">tanshikarspicefarm.com</a></p>
+          <div class="tag-row"><span class="tag">Forest Trek</span><span class="tag">Plantation</span><span class="tag">Lunch Included</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">12:30 PM<span class="duration">drive</span></div>
+        <div class="block-content">
+          <h4>Drive to Cuelim</h4>
+          <div class="place-meta">~1.5 hrs west to the coast</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">2:30 PM<span class="duration">2 hrs</span></div>
+        <div class="block-content">
+          <h4>Floating Feni at Fazenda Cazulo</h4>
+          <div class="place-meta">Cuelim, South Goa · ₹2,500 pp</div>
+          <p>Two-hour tasting at a century-old cashew farm and distillery. The table is set in the middle of a natural freshwater spring under a tree canopy — feet in the water, three styles of feni paired with Goan snacks, sweets, fruits, and spices. <a href="https://urbanaut.app/spot/luxury-water-experience-at-fazenda-cazulo" target="_blank">Book on Urbanaut</a></p>
+          <div class="tag-row"><span class="tag">Experience</span><span class="tag">Tasting</span><span class="tag cost">₹₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">4:30 PM<span class="duration">drive</span></div>
+        <div class="block-content">
+          <h4>Drive back to Anjuna</h4>
+          <div class="place-meta">~1.5 hrs north</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">6:00 PM<span class="duration">2 hrs</span></div>
+        <div class="block-content">
+          <h4>Purple Martini</h4>
+          <div class="place-meta">Sunset Point, Anjuna · 5 min from base</div>
+          <p>Iconic Anjuna cliff bar. 180° view of the Arabian Sea, Santorini-styled blue and white, Mediterranean and North Indian menu, signature cocktails. <a href="https://www.instagram.com/purplemartinigoa/" target="_blank">@purplemartinigoa</a></p>
+          <div class="tag-row"><span class="tag fixed">Fixed</span><span class="tag cost">₹₹₹</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-header">
+    <div class="day-num">04</div>
+    <div>
+      <h1 class="day-headline">Mangroves, contemporary art, a <em>surf lesson</em>, Bastian.</h1>
+      <div class="day-date">Tuesday · 19 May</div>
+    </div>
+    <div class="day-meta"><strong>The big day</strong>Chorao · Pilerne · Morjim</div>
+  </div>
+  <div class="day-body">
+    <div class="day-visual"><img src="images/day-4.jpg" alt="Mangrove backwaters"></div>
+    <div class="timeline">
+      <div class="block">
+        <div class="block-time">7:00 AM<span class="duration">drive</span></div>
+        <div class="block-content">
+          <h4>Drive to Ribandar, ferry to Chorao</h4>
+          <div class="place-meta">~40 min + 10-min ferry crossing</div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">8:00 AM<span class="duration">2.5 hrs</span></div>
+        <div class="block-content">
+          <h4>Mangrove Kayaking · Dr. Salim Ali Bird Sanctuary</h4>
+          <div class="place-meta">Chorao Island · ~₹1,500 pp</div>
+          <p>Goa's only bird sanctuary — 1.8 sq km of estuarine mangrove on Chorao Island. Kayak through narrow channels unreachable any other way, threading through 14 species of mangrove. Kingfishers, herons, eagles. <a href="https://cyclingzens.com/product/sanctuary-mangrove-kayaking/" target="_blank">Cycling Zens</a></p>
+          <div class="tag-row"><span class="tag">Active</span><span class="tag">Wildlife</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">11:30 AM<span class="duration">2 hrs</span></div>
+        <div class="block-content">
+          <h4>Museum of Goa (MOG)</h4>
+          <div class="place-meta">Pilerne Industrial Estate · ₹150 pp</div>
+          <p>Subodh Kerkar's private contemporary art museum. Three floors, 1,500 sq m, rotating exhibitions of paintings, sculpture, installations rooted in Goan history. Sculpture garden, MOG Café for lunch. <a href="https://museumofgoa.com/" target="_blank">museumofgoa.com</a></p>
+          <div class="tag-row"><span class="tag">Art</span><span class="tag">Indoor</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">2:00 PM<span class="duration">~2 hrs</span></div>
+        <div class="block-content">
+          <h4>Surf Lesson at Morjim</h4>
+          <div class="place-meta">Octopus Surf, S2 Beach Shack · ~₹1,800</div>
+          <p>Soft beach-break waves at Morjim, ideal for a first lesson. 30 minutes on land, 60 minutes in water, all gear included. <a href="https://octopus.surf/" target="_blank">octopus.surf</a></p>
+          <div class="tag-row"><span class="tag">Active</span><span class="tag">Lesson</span><span class="tag cost">₹</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">4:30 PM<span class="duration">rest</span></div>
+        <div class="block-content"><h4>Back to base</h4></div>
+      </div>
+      <div class="block">
+        <div class="block-time">9:00 PM<span class="duration">4 hrs</span></div>
+        <div class="block-content">
+          <h4>Bastian Riviera</h4>
+          <div class="place-meta">Morjim backwaters · ~20 min from Anjuna</div>
+          <p>Shilpa Shetty's Bastian Hospitality Group — 1.5-acre waterfront destination on the Morjim backwaters. Pyramid-inspired central structure, private cabanas, circular sunbeds, outdoor bar opening onto the river. Influences from Mykonos, Egypt, Dubai. <a href="https://www.instagram.com/bastianriviera/" target="_blank">@bastianriviera</a></p>
+          <div class="tag-row"><span class="tag fixed">Fixed</span><span class="tag cost">₹₹₹₹</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="day">
+  <div class="day-header">
+    <div class="day-num">05</div>
+    <div>
+      <h1 class="day-headline">The <em>flea market</em>, lunch, departure.</h1>
+      <div class="day-date">Wednesday · 20 May</div>
+    </div>
+    <div class="day-meta"><strong>The bookend</strong>Anjuna · Airport</div>
+  </div>
+  <div class="day-body">
+    <div class="day-visual"><img src="images/day-5.jpg" alt="Anjuna flea market"></div>
+    <div class="timeline">
+      <div class="block">
+        <div class="block-time">9:00 AM<span class="duration">3 hrs</span></div>
+        <div class="block-content">
+          <h4>Anjuna Flea Market</h4>
+          <div class="place-meta">Anjuna Beach · Walking distance · Wednesdays only</div>
+          <p>Goa's oldest market, started in the 1960s by hippies. Tibetan jewellery, hippie clothes, hammocks, dreamcatchers, spices, leather sandals. Smaller this late in season but the bones are intact.</p>
+          <div class="tag-row"><span class="tag">Market</span><span class="tag">Walking</span></div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">12:00 PM<span class="duration">lunch</span></div>
+        <div class="block-content">
+          <h4>Last lunch</h4>
+          <p>Anywhere on the food map below.</p>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-time">Afternoon<span class="duration">→</span></div>
+        <div class="block-content">
+          <h4>Check out, taxi to airport</h4>
+          <div class="place-meta">~90 min to Mopa · ~75 min to Dabolim</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="food" id="food">
+  <div class="food-header">
+    <div>
+      <div class="section-label">The Food Map</div>
+      <h2>Twenty places, <em>every one</em> with both veg &amp; non-veg.</h2>
+    </div>
+    <p>A mix of beach shacks, modern brunch cafes, classic Goan kitchens, fine-dining outliers. Filter by area or price. Tap a card or a pin to cross-highlight.</p>
+  </div>
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Area</span>
+      <button class="chip active" data-filter-type="area" data-value="all">All</button>
+      <button class="chip" data-filter-type="area" data-value="Anjuna">Anjuna</button>
+      <button class="chip" data-filter-type="area" data-value="Vagator">Vagator</button>
+      <button class="chip" data-filter-type="area" data-value="Assagao">Assagao</button>
+      <button class="chip" data-filter-type="area" data-value="Panjim">Panjim</button>
+      <button class="chip" data-filter-type="area" data-value="Morjim">Morjim / Ashwem</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Price</span>
+      <button class="chip active" data-filter-type="price" data-value="all">Any</button>
+      <button class="chip" data-filter-type="price" data-value="1">₹</button>
+      <button class="chip" data-filter-type="price" data-value="2">₹₹</button>
+      <button class="chip" data-filter-type="price" data-value="3">₹₹₹</button>
+      <button class="chip" data-filter-type="price" data-value="4">₹₹₹₹</button>
+    </div>
+  </div>
+  <div class="food-layout">
+    <div id="map"></div>
+    <div class="restaurant-panel">
+      <div class="r-count" id="r-count"><strong>20</strong> places shown</div>
+      <div id="r-list"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>Goa · May 16 — 20 · 2026</span>
+  <em>Made for slow, warm afternoons.</em>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const restaurants = [
+  { id: 'curlies', name: 'Curlies', area: 'Anjuna', type: ['Beach Shack', 'Multi-cuisine'], price: 2,
+    description: 'Iconic Anjuna Beach shack since the 90s. Cane chairs in the sand, fairy lights at night, full bar, late-night trance.',
+    lat: 15.5715, lng: 73.7390, link: 'https://www.instagram.com/curliesgoa/' },
+  { id: 'eva', name: 'Eva Cafe', area: 'Anjuna', type: ['Cafe', 'Cliffside'], price: 2,
+    description: 'Anjuna cliff cafe with a wraparound sea view. Mediterranean menu, generous portions, the kind of place you stay three hours.',
+    lat: 15.5775, lng: 73.7378, link: 'https://www.instagram.com/evacafegoa/' },
+  { id: 'pisco', name: 'Pisco by the Beach', area: 'Anjuna', type: ['Modern', 'Latin American'], price: 3,
+    description: 'Upscale Latin American with cabana seating on the rocky end of Anjuna Beach. Peruvian-influenced menu, serious cocktails.',
+    lat: 15.5750, lng: 73.7400, link: 'https://www.zomato.com/goa/pisco-by-the-beach-anjuna' },
+  { id: 'mango', name: 'Mango Tree Bar & Cafe', area: 'Anjuna', type: ['Cafe', 'Multi-cuisine'], price: 2,
+    description: 'Long-running Anjuna favourite under actual mango trees. Laid-back, multi-cuisine, consistently good from brunch to late dinner.',
+    lat: 15.5765, lng: 73.7420, link: 'https://www.zomato.com/goa/mango-tree-bar-cafe-anjuna' },
+  { id: 'bomras', name: "Bomra's", area: 'Anjuna', type: ['Burmese', 'Fine Dining'], price: 4,
+    description: "Bawmra Jap's Burmese restaurant. Small, romantic, considered one of the best in India. Tea leaf salad, pork belly with pickled mango, Burmese fish curry.",
+    lat: 15.5800, lng: 73.7445, link: 'https://www.bomras.com/' },
+  { id: 'burger', name: 'Burger Factory', area: 'Anjuna', type: ['Casual', 'Burgers'], price: 1,
+    description: 'Burgers done well. Veg, paneer, chicken, beef. Sweet potato fries excellent. Walking distance from base.',
+    lat: 15.5805, lng: 73.7438, link: 'https://www.zomato.com/goa/burger-factory-anjuna' },
+  { id: 'artjuna', name: 'Artjuna', area: 'Anjuna', type: ['Cafe', 'Brunch'], price: 2,
+    description: 'Israeli-Mediterranean cafe and lifestyle space. Shakshuka, hummus platters, sabich, fresh juices. The Anjuna brunch standard.',
+    lat: 15.5790, lng: 73.7430, link: 'https://www.artjuna.com/' },
+  { id: 'babka', name: 'Babka', area: 'Anjuna', type: ['Bakery', 'Cafe'], price: 2,
+    description: 'Small patisserie-meets-coffee-shop in Gaunwadi. Proper coffee, bagels, all-day breakfast, fresh sourdough.',
+    lat: 15.5825, lng: 73.7475, link: 'https://www.instagram.com/babkagoa/' },
+  { id: 'titlie', name: 'Titlie', area: 'Vagator', type: ['Modern', 'European'], price: 2,
+    description: 'Garden restaurant off Ozran Beach Road. Terracotta walls, fairy lights, modern European with Indian touches. Quietly excellent cocktails.',
+    lat: 15.5895, lng: 73.7335, link: 'https://www.instagram.com/titliegoa/' },
+  { id: 'thalassa', name: 'Thalassa', area: 'Vagator', type: ['Greek', 'Cliffside'], price: 3,
+    description: "Mariketty Grana's Greek restaurant. White and blue taverna feel, saganaki, moussaka, proper grilled fish, the bucket-list sundowner spot.",
+    lat: 15.6020, lng: 73.7390, link: 'https://www.thalassagoa.com/' },
+  { id: 'olive', name: 'Olive Bar & Kitchen', area: 'Vagator', type: ['Mediterranean', 'Fine Dining'], price: 4,
+    description: 'The grande dame of Vagator. Whitewashed terraces above the beach, Mediterranean menu, Sunday brunches that last all afternoon.',
+    lat: 15.6010, lng: 73.7395, link: 'https://www.olivebarandkitchen.com/olive-goa/' },
+  { id: 'bawri', name: 'Bawri', area: 'Assagao', type: ['Modern Indian', 'Fine Dining'], price: 3,
+    description: 'Indian comfort food reimagined. Vintage tiles, brass, dark wood. Regional Indian done seriously — Lucknow biryani, Kolkata mutton, Goan choriz pao.',
+    lat: 15.5878, lng: 73.7515, link: 'https://www.instagram.com/bawri.in/' },
+  { id: 'gunpowder', name: 'Gunpowder', area: 'Assagao', type: ['South Indian', 'Goan'], price: 2,
+    description: 'South Indian, Kerala-inflected, Goan accents. Appam with stew, kainakairy curry, pomfret fry. Garden seating in an old Portuguese bungalow.',
+    lat: 15.5870, lng: 73.7530, link: 'https://www.instagram.com/gunpowdergoa/' },
+  { id: 'vinayak', name: 'Vinayak Family Restaurant', area: 'Assagao', type: ['Goan', 'Local'], price: 1,
+    description: 'The Goan fish thali institution. Looks like nothing from outside, packs out at lunch. Chonak fish thali is the order.',
+    lat: 15.5860, lng: 73.7530, link: 'https://www.zomato.com/goa/vinayak-family-restaurant-assagao' },
+  { id: 'mums', name: "Mum's Kitchen", area: 'Panjim', type: ['Goan', 'Local'], price: 2,
+    description: "Traditional recipes collected from Goan households. Unusually extensive vegetarian menu alongside the seafood. Rustic-elegant space around a koi pond.",
+    lat: 15.4880, lng: 73.8175, link: 'https://www.mumskitchengoa.com/' },
+  { id: 'antonio', name: 'Antonio @ 31', area: 'Panjim', type: ['Goan', 'Tapas'], price: 3,
+    description: 'Bar-and-tapas room in a heritage Altinho mansion. Goan small plates, cocktails built on kokum, urak, and feni. Recheado bhindi, butta, bingtakar.',
+    lat: 15.4960, lng: 73.8270, link: 'https://www.instagram.com/antonioat31/' },
+  { id: 'venite', name: 'Hospedaria Venite', area: 'Panjim', type: ['Goan', 'Heritage'], price: 2,
+    description: 'Panjim institution since 1955. Narrow balconies over 31st January Road in Fontainhas, each with a table for two. Goan classics done classically.',
+    lat: 15.4980, lng: 73.8295, link: 'https://www.facebook.com/HotelVenite/' },
+  { id: 'blacksheep', name: 'Black Sheep Bistro', area: 'Panjim', type: ['Modern', 'European'], price: 3,
+    description: "Globally-inspired food with local-ingredient bones. Goan kingfish with miso, sourdough pizzas, excellent cocktails. New location in Villa Braganca.",
+    lat: 15.4970, lng: 73.8298, link: 'https://www.theblacksheepbistro.com/' },
+  { id: 'laplage', name: 'La Plage', area: 'Morjim', type: ['French', 'Beach'], price: 3,
+    description: "Ashwem's iconic beachside French. Feet-in-sand tables under thatched parasols. Tuna carpaccio, beef tartare, chocolate thali.",
+    lat: 15.6320, lng: 73.7220, link: 'https://www.instagram.com/laplagegoa/' },
+  { id: 'sublime', name: 'Sublime', area: 'Morjim', type: ['Modern', 'Multi-cuisine'], price: 3,
+    description: "Chef Chris Saleem Agha Bee's long-running Morjim restaurant. Eclectic, ingredient-driven menu — risotto to recheado prawn to tasting plates. Garden seating, candlelight.",
+    lat: 15.6300, lng: 73.7335, link: 'https://www.instagram.com/sublimegoa/' }
+];
+
+const map = L.map('map').setView([15.560, 73.778], 11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+const markerIcon = L.divIcon({
+  className: 'custom-marker-wrap',
+  html: '<div class="custom-marker"></div>',
+  iconSize: [26, 26],
+  iconAnchor: [13, 26]
+});
+
+const markers = {};
+const cards = {};
+let activeArea = 'all';
+let activePrice = 'all';
+const priceSymbol = p => '₹'.repeat(p);
+
+function renderList() {
+  const list = document.getElementById('r-list');
+  list.innerHTML = '';
+  const filtered = restaurants.filter(r => {
+    const areaOK = activeArea === 'all' || r.area === activeArea;
+    const priceOK = activePrice === 'all' || r.price === parseInt(activePrice);
+    return areaOK && priceOK;
+  });
+  document.getElementById('r-count').innerHTML = `<strong>${filtered.length}</strong> place${filtered.length === 1 ? '' : 's'} shown`;
+  filtered.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'r-card';
+    card.dataset.id = r.id;
+    card.innerHTML = `
+      <div class="r-top"><div class="r-name">${r.name}</div><div class="r-price">${priceSymbol(r.price)}</div></div>
+      <div class="r-meta">${r.area} <span class="dot">·</span> ${r.type.join(' · ')}</div>
+      <p class="r-desc">${r.description}</p>
+      <div class="r-tags">
+        <span class="r-tag veg">Veg ✓</span>
+        <span class="r-tag nonveg">Non-Veg ✓</span>
+        ${r.link ? `<a href="${r.link}" target="_blank" class="r-tag" style="border:none;padding:0;text-decoration:underline;color:var(--ocean);">View ↗</a>` : ''}
+      </div>`;
+    card.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') return;
+      const m = markers[r.id];
+      if (m) { map.setView([r.lat, r.lng], 14, { animate: true }); m.openPopup(); }
+      document.querySelectorAll('.r-card').forEach(c => c.classList.remove('highlighted'));
+      card.classList.add('highlighted');
+    });
+    cards[r.id] = card;
+    list.appendChild(card);
+  });
+  Object.values(markers).forEach(m => map.removeLayer(m));
+  Object.keys(markers).forEach(k => delete markers[k]);
+  filtered.forEach(r => {
+    const marker = L.marker([r.lat, r.lng], { icon: markerIcon }).addTo(map);
+    marker.bindPopup(`<div class="popup-name">${r.name}</div><div class="popup-meta">${r.area} <span class="dot">·</span> ${priceSymbol(r.price)} <span class="dot">·</span> ${r.type[0]}</div>`);
+    marker.on('click', () => {
+      document.querySelectorAll('.r-card').forEach(c => c.classList.remove('highlighted'));
+      const card = cards[r.id];
+      if (card) { card.classList.add('highlighted'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    });
+    markers[r.id] = marker;
+  });
+  if (filtered.length > 0) {
+    const bounds = L.latLngBounds(filtered.map(r => [r.lat, r.lng]));
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+  }
+}
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const type = chip.dataset.filterType;
+    const value = chip.dataset.value;
+    document.querySelectorAll(`.chip[data-filter-type="${type}"]`).forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    if (type === 'area') activeArea = value;
+    if (type === 'price') activePrice = value;
+    renderList();
+  });
+});
+
+renderList();
+setTimeout(() => map.invalidateSize(), 200);
+window.addEventListener('load', () => map.invalidateSize());
+</script>
+</body>
+</html>
